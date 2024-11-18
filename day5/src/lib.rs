@@ -1,3 +1,13 @@
+use std::{error::Error, io, process};
+use csv::Reader;
+
+#[derive(Debug, serde::Deserialize)]
+struct Entry {
+    output_start: i32,
+    input_start: i32,
+    input_range: i32,
+}
+
 struct AlmanacEntry {
     output_start: i32,
     input_start: i32,
@@ -16,6 +26,24 @@ fn mapping_logic_impl(x: i32, map: &Vec<AlmanacEntry>) -> i32 {
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    #[test]
+    fn proper_deserialize_to_entry() -> Result<(), Box<dyn Error>> {
+        // Note: must be without spaces
+        let data = "\
+output_start,input_start,input_range
+50,98,2
+52,50,48
+";
+        let mut rdr = Reader::from_reader(data.as_bytes());
+        println!("Attempt to deserialize");
+        for result in rdr.deserialize() {
+            println!(" - Read one record");
+            let record: Entry = result?;
+            println!("{:?}", record);
+        }
+        Ok(())
+    }
 
     #[test]
     fn proper_mapping() {
