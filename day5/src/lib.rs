@@ -1,5 +1,5 @@
-use std::{error::Error, io, process};
 use csv::Reader;
+use std::{error::Error, io, process};
 
 #[derive(Debug, serde::Deserialize)]
 struct Entry {
@@ -23,6 +23,33 @@ fn mapping_logic_impl(x: i32, map: &Vec<AlmanacEntry>) -> i32 {
     x
 }
 
+#[derive(Debug)]
+pub struct Config {
+    first_file: String,
+    second_file: String,
+}
+
+impl Config {
+    pub fn build(args: &[String]) -> Result<Config, &'static str> {
+        if args.len() < 3 {
+            return Err("Not enough arguments");
+        }
+
+        let first_file = args[1].clone();
+        let second_file = args[2].clone();
+
+        Ok(Config {
+            first_file,
+            second_file,
+        })
+    }
+}
+
+pub fn run(config: Config) -> Result<(), Box<dyn Error>> {
+    // TODO
+    Ok(())
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
@@ -35,6 +62,7 @@ output_start,input_start,input_range
 50,98,2
 52,50,48
 ";
+
         let mut rdr = Reader::from_reader(data.as_bytes());
         println!("Attempt to deserialize");
         for result in rdr.deserialize() {
